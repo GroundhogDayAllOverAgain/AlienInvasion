@@ -8,6 +8,13 @@ from bullet import Bullet
 class AlienInvasion:
     """Overall class to manage game assets and behavior."""
 
+
+# ... existing code ...
+
+
+class AlienInvasion:
+    """Overall class to manage game assets and behavior."""
+
     def __init__(self):
         """Initialize the game, and create game resources."""
         pygame.init()
@@ -26,6 +33,10 @@ class AlienInvasion:
         # Create a Ship instance
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+
+        # Add firing tracking
+        self.space_pressed = False
+        self.last_fire_time = 0
 
     def run_game(self):
         """Start the main loop for the game."""
@@ -47,6 +58,13 @@ class AlienInvasion:
             elif event.type == pygame.KEYUP:
                 self._check_keyup_events(event)
 
+        # Check for continuous fire if space is pressed
+        if self.space_pressed:
+            current_time = pygame.time.get_ticks()
+            if current_time - self.last_fire_time > 100:  # 100ms = 10 bullets/second
+                self._fire_bullet()
+                self.last_fire_time = current_time
+
     def _check_keydown_events(self, event):
         """Respond to keypresses."""
         if event.key == pygame.K_RIGHT:
@@ -56,7 +74,7 @@ class AlienInvasion:
         elif event.key == pygame.K_q:
             sys.exit()
         elif event.key == pygame.K_SPACE:
-            self._fire_bullet()
+            self.space_pressed = True
 
     def _fire_bullet(self):
         """Create a new bullet and add it to the bullets group."""
@@ -70,6 +88,8 @@ class AlienInvasion:
             self.ship.moving_right = False
         elif event.key == pygame.K_LEFT:
             self.ship.moving_left = False
+        elif event.key == pygame.K_SPACE:
+            self.space_pressed = False
 
     def _update_bullets(self):
         """Update position of bullets and get rid of old bullets."""
@@ -91,6 +111,8 @@ class AlienInvasion:
         # Make the most recently drawn screen visible.
         pygame.display.flip()
 
+
+# ... existing code ...
 
 if __name__ == "__main__":
     # Make a game instance, and run the game.
