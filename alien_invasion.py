@@ -3,6 +3,7 @@ import pygame
 from settings import Settings
 from ship import Ship
 from bullet import Bullet
+from alien import Alien
 
 
 class AlienInvasion:
@@ -33,6 +34,8 @@ class AlienInvasion:
         # Create a Ship instance
         self.ship = Ship(self)
         self.bullets = pygame.sprite.Group()
+        self.aliens = pygame.sprite.Group()
+        self._create_fleet()  # Add this line
 
         # Add firing tracking
         self.space_pressed = False
@@ -100,6 +103,22 @@ class AlienInvasion:
             if bullet.rect.bottom <= 0:
                 self.bullets.remove(bullet)
 
+    def _create_fleet(self):
+        """Create the fleet of aliens."""
+        # Make an alien.
+        alien = Alien(self)
+        alien_width, alien_height = alien.rect.width, alien.rect.height
+
+        # Calculate how many aliens fit in a row
+        current_x = alien_width
+        while current_x < (self.settings.screen_width - 2 * alien_width):
+            new_alien = Alien(self)
+            new_alien.x = current_x
+            new_alien.rect.x = current_x
+            new_alien.rect.y = alien.rect.height  # Position at top
+            self.aliens.add(new_alien)
+            current_x += 2 * alien_width
+
     def _update_screen(self):
         """Update images on the screen, and flip to the new screen."""
         # Redraw the screen during each pass through the loop.
@@ -108,6 +127,7 @@ class AlienInvasion:
             bullet.draw_bullet()
         # Draw the ship
         self.ship.blitme()
+        self.aliens.draw(self.screen)
         # Make the most recently drawn screen visible.
         pygame.display.flip()
 
